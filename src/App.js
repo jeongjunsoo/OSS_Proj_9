@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import AutosizeTextarea from 'react-autosize-textarea';
+import Text from './RandomText';
 
 function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('');
@@ -14,7 +15,7 @@ function App() {
 
   const handleLanguageClick = (language) => {
     setSelectedLanguage(language);
-    generateRandomText(language);
+    setText(Text(language));
   };
 
   const handleChange = (e) => {
@@ -45,26 +46,6 @@ function App() {
     setTextClass(isCorrect ? 'correct' : 'incorrect');
   };
 
-  const generateRandomText = (language) => {
-    let randomText = '';
-
-    if (language === 'C') {
-      randomText = "int main() {\n\n}";
-    } else if (language === 'Java') {
-      randomText = "public class Main {\n    public static void main(String[] args) {\n\n    }\n}";
-    } else if (language === 'React') {
-      randomText = "import React, { useState } from 'react';\n\nfunction App() {\n\n}";
-    } else if (language === 'Python') {
-      randomText = "def main():\n\n\nif __name__ == '__main__':\n    main()";
-    }
-
-    setText(randomText);
-    setInput('');
-    setTextClass('');
-    setStartTime(null);
-    setEndTime(null);
-    setTypingSpeed(0);
-  };
 
   useEffect(() => {
     if (input.length === 0) {
@@ -107,6 +88,13 @@ function App() {
         <button onClick={() => handleLanguageClick('Java')}>Java</button>
         <button onClick={() => handleLanguageClick('React')}>React</button>
         <button onClick={() => handleLanguageClick('Python')}>Python</button>
+        <button onClick={() => handleLanguageClick('HTML')}>HTML</button>
+        <button onClick={() => handleLanguageClick('CSS')}>CSS</button>
+        <button onClick={() => handleLanguageClick('JS')}>JavaScript</button>
+        <button onClick={() => handleLanguageClick('SQL')}>SQL</button>
+        <button onClick={() => handleLanguageClick('PHP')}>PHP</button>
+        <button onClick={() => handleLanguageClick('Ruby')}>Ruby</button>
+        <button onClick={() => handleLanguageClick('Rust')}>Rust</button>
       </div>
       {selectedLanguage && (
         <>
@@ -147,4 +135,3 @@ function App() {
 
 export default App;
 
-//이게 뭐야 씨발 
