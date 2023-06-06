@@ -13,8 +13,7 @@ function Text(language) {
       
       React: [
         "useState", "useEffect", "props", "state", "component", "render", "return", "onClick", "onChange", "onSubmit", "import", "export", "const", "let", "arrow function",
-        "class", "style", "className", "map", "key", "useState", "useEffect", "props", "state", "component", "render", "return", "onClick", "onChange", "onSubmit",
-        "import", "export", "const", "let", "arrow function", "class", "style", "className", "map", "key"
+        "class", "style", "className", "map", "key"
       ],
 
       Python: [
@@ -62,4 +61,5 @@ function Text(language) {
   }
   
   export default Text;
+
   

@@ -4,38 +4,51 @@ import AutosizeTextarea from 'react-autosize-textarea';
 import Text from './RandomText';
 
 function App() {
-  const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [text, setText] = useState('');
-  const [input, setInput] = useState('');
-  const [textClass, setTextClass] = useState('');
-  const [typingSpeed, setTypingSpeed] = useState(0);
-  const [timer, setTimer] = useState(40);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(''); 
+  const [text, setText] = useState(''); 
+  const [input, setInput] = useState(''); 
+  const [textClass, setTextClass] = useState(''); 
+  const [typingSpeed, setTypingSpeed] = useState(0); 
+  const [timer, setTimer] = useState(40); 
+  const [isTimerRunning, setIsTimerRunning] = useState(false); 
+  const [totalTypingSpeed, setTotalTypingSpeed] = useState(0); 
+  const [sessionCount, setSessionCount] = useState(0); 
+  const [previousTexts, setPreviousTexts] = useState([]);
+
 
   const handleLanguageClick = (language) => {
-    setSelectedLanguage(language);
-    generateNewText(language);
-    setInput('');
-    setIsTimerRunning(false);
-    setTypingSpeed(0);
+    setSelectedLanguage(language); 
+    generateNewText(language); 
+    setInput(''); 
+    setIsTimerRunning(false); 
+    setTypingSpeed(0); 
   };
 
+
   const generateNewText = (language) => {
-    const newText = Text(language);
-    setText(newText);
+    let newText = Text(language); 
+  
+
+    while (previousTexts.includes(newText)) {
+      newText = Text(language); 
+    }
+  
+    setText(newText); 
+    setPreviousTexts((prevTexts) => [...prevTexts, newText]); 
   };
+
 
   const handleChange = (e) => {
     if (timer <= 0) {
       e.preventDefault();
-      return; // 타이머가 0일 때는 입력을 처리하지 않음
+      return; 
     }
 
     const inputValue = e.target.value;
     setInput(inputValue);
 
-    const formattedInput = inputValue.replace(/\r\n|\r|\n/g, '\n');
-    const formattedText = text.replace(/\r\n|\r|\n/g, '\n');
+    const formattedInput = inputValue.replace(/\r\n|\r|\n/g, '\n'); 
+    const formattedText = text.replace(/\r\n|\r|\n/g, '\n'); 
 
     let isCorrect = true;
     let updatedInput = '';
@@ -59,11 +72,16 @@ function App() {
 
     if (isCorrect && formattedInput === formattedText) {
       generateNewText(selectedLanguage);
+      
+      setTotalTypingSpeed(prevTotalSpeed => prevTotalSpeed + parseFloat(typingSpeed));
+      setSessionCount(prevCount => prevCount + 1);
       setInput('');
-      setIsTimerRunning(false);
-      setTypingSpeed(0);
-      setTimer(40); // 타이머 초기화
     }
+
+    const elapsedTime = 40 - timer;
+    const cpm = input.length / (elapsedTime / 60);
+    const wpm = cpm /5 ;
+    setTypingSpeed(wpm.toFixed(0));
   };
 
   useEffect(() => {
@@ -76,41 +94,28 @@ function App() {
         clearInterval(timerId);
       };
     } else if (timer === 0) {
-      
     }
   }, [isTimerRunning, timer]);
 
-  useEffect(() => {
-    if (!isTimerRunning && input.length > 0) {
-      const elapsedTime = 40 - timer;
-      const cpm = text.length / (elapsedTime / 60);
-      const wpm = cpm / 5;
-      setTypingSpeed(wpm.toFixed(0));
-    }
-  }, [text, timer, isTimerRunning]);
+  const handleInputFocus = () => {
+    setIsTimerRunning(true); 
+  };
 
-  const formatTypingSpeed = (typingSpeed) => {
-    if (typingSpeed > 0) {
-      const formattedSpeed = typingSpeed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const formatTypingSpeed = () => {
+    if (sessionCount > 0) {
+      const averageSpeed = totalTypingSpeed / sessionCount;
+      const formattedSpeed = averageSpeed.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return formattedSpeed;
     }
-    return typingSpeed;
+    return 0;
   };
-
-  const handleInputFocus = () => {
-    setIsTimerRunning(true);
-  };
-
-  useEffect(() => {
-    if (!isTimerRunning) {
-      setTimer(40);
-    }
-  }, [isTimerRunning]);
+  
 
   return (
     <div className="App">
       <h1>Typing Practice</h1>
       <div className="language-buttons">
+        {/* 언어 선택 버튼들 */}
         <button onClick={() => handleLanguageClick('C')}>C</button>
         <button onClick={() => handleLanguageClick('Java')}>Java</button>
         <button onClick={() => handleLanguageClick('React')}>React</button>
@@ -121,7 +126,7 @@ function App() {
         <button onClick={() => handleLanguageClick('SQL')}>SQL</button>
         <button onClick={() => handleLanguageClick('PHP')}>PHP</button>
         <button onClick={() => handleLanguageClick('Ruby')}>Ruby</button>
-        <button onClick={() => handleLanguageClick('Rust')}>Rust</button>
+        
       </div>
       {selectedLanguage && (
         <>
@@ -149,15 +154,17 @@ function App() {
               onChange={handleChange}
               onFocus={handleInputFocus}
               className="typing-space"
-              placeholder={timer > 0 ? "Start typing here..." : "Time's up!"}
+              placeholder={timer > 0 ? '여기에서 타이핑을 시작하세요...' : '타이머 종료'}
               disabled={timer <= 0}
             />
           </div>
-          <div className="typing-speed">
-            Your typing speed: <span className="speed">{formatTypingSpeed(typingSpeed)}</span> WPM
-          </div>
-          <div className="timer">
-            Time remaining: {timer}s
+          <div className="info-container">
+            <div className="timer">
+              <span>남은 시간: {timer}</span>
+            </div>
+            <div className="typing-speed">
+              <span>타이핑 속도: {formatTypingSpeed()} WPM</span>
+            </div>
           </div>
         </>
       )}
