@@ -14,7 +14,7 @@ function App() {
   const [totalTypingSpeed, setTotalTypingSpeed] = useState(0); 
   const [sessionCount, setSessionCount] = useState(0); 
   const [previousTexts, setPreviousTexts] = useState([]);
-
+  const [isTimerExpired, setIsTimerExpired] = useState(false); 
 
   const handleLanguageClick = (language) => {
     setSelectedLanguage(language); 
@@ -22,21 +22,19 @@ function App() {
     setInput(''); 
     setIsTimerRunning(false); 
     setTypingSpeed(0); 
+    setIsTimerExpired(false);
   };
-
 
   const generateNewText = (language) => {
     let newText = Text(language); 
-  
 
     while (previousTexts.includes(newText)) {
       newText = Text(language); 
     }
-  
+
     setText(newText); 
     setPreviousTexts((prevTexts) => [...prevTexts, newText]); 
   };
-
 
   const handleChange = (e) => {
     if (timer <= 0) {
@@ -72,7 +70,6 @@ function App() {
 
     if (isCorrect && formattedInput === formattedText) {
       generateNewText(selectedLanguage);
-      
       setTotalTypingSpeed(prevTotalSpeed => prevTotalSpeed + parseFloat(typingSpeed));
       setSessionCount(prevCount => prevCount + 1);
       setInput('');
@@ -80,7 +77,7 @@ function App() {
 
     const elapsedTime = 40 - timer;
     const cpm = input.length / (elapsedTime / 60);
-    const wpm = cpm /5 ;
+    const wpm = cpm / 5;
     setTypingSpeed(wpm.toFixed(0));
   };
 
@@ -94,6 +91,7 @@ function App() {
         clearInterval(timerId);
       };
     } else if (timer === 0) {
+      setIsTimerExpired(true); 
     }
   }, [isTimerRunning, timer]);
 
@@ -109,7 +107,12 @@ function App() {
     }
     return 0;
   };
-  
+
+  const handleRestartClick = () => {
+    setTimer(40);
+    handleLanguageClick(selectedLanguage);
+    setTypingSpeed(0);
+  };
 
   return (
     <div className="App">
@@ -126,9 +129,8 @@ function App() {
         <button onClick={() => handleLanguageClick('SQL')}>SQL</button>
         <button onClick={() => handleLanguageClick('PHP')}>PHP</button>
         <button onClick={() => handleLanguageClick('Ruby')}>Ruby</button>
-        
       </div>
-      {selectedLanguage && (
+      {selectedLanguage && !isTimerExpired ? (
         <>
           <div className="text-container">
             <pre className={`text-to-type ${textClass}`}>
@@ -167,6 +169,12 @@ function App() {
             </div>
           </div>
         </>
+      ) : (
+        <div className="completion-message">
+          {`시간이 초과되었습니다. 당신의 최종 타자 속도는 ${formatTypingSpeed()}입니다.`}
+          <br />
+          <button onClick={handleRestartClick}>다시하기</button>
+        </div>
       )}
     </div>
   );
