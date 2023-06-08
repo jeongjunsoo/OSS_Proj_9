@@ -13,6 +13,7 @@ function App() {
   const [isTimerRunning, setIsTimerRunning] = useState(false); 
   const [totalTypingSpeed, setTotalTypingSpeed] = useState(0); 
   const [sessionCount, setSessionCount] = useState(0); 
+  const [textLength, setTextLength] = useState(0);
   const [previousTexts, setPreviousTexts] = useState([]);
   const [isTimerExpired, setIsTimerExpired] = useState(false); 
 
@@ -68,15 +69,18 @@ function App() {
     setInput(updatedInput);
     setTextClass(isCorrect ? 'correct' : 'incorrect');
 
+    
     if (isCorrect && formattedInput === formattedText) {
       generateNewText(selectedLanguage);
       setTotalTypingSpeed(prevTotalSpeed => prevTotalSpeed + parseFloat(typingSpeed));
       setSessionCount(prevCount => prevCount + 1);
+      setTextLength(prevLength => prevLength + input.length);
       setInput('');
     }
+    
 
-    const elapsedTime = 40 - timer;
-    const cpm = input.length / (elapsedTime / 60);
+    const elapsedTime = (40 - timer) / 60;
+    const cpm = textLength / elapsedTime;
     const wpm = cpm / 5;
     setTypingSpeed(wpm.toFixed(0));
   };
