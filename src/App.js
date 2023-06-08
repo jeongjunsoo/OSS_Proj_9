@@ -40,23 +40,23 @@ function App() {
   const handleChange = (e) => {
     if (timer <= 0) {
       e.preventDefault();
-      return; 
+      return;
     }
-
+  
     const inputValue = e.target.value;
     setInput(inputValue);
-
-    const formattedInput = inputValue.replace(/\r\n|\r|\n/g, '\n'); 
-    const formattedText = text.replace(/\r\n|\r|\n/g, '\n'); 
-
+  
+    const formattedInput = inputValue.replace(/\r\n|\r|\n/g, '\n');
+    const formattedText = text.replace(/\r\n|\r|\n/g, '\n');
+  
     let isCorrect = true;
     let updatedInput = '';
-
+  
     for (let i = 0; i < formattedInput.length; i++) {
       if (formattedInput.charAt(i) !== formattedText.charAt(i)) {
         isCorrect = false;
       }
-
+  
       if (formattedInput.charAt(i) === ' ') {
         updatedInput += ' ';
       } else if (formattedInput.charAt(i) === '\n') {
@@ -65,7 +65,7 @@ function App() {
         updatedInput += formattedInput.charAt(i);
       }
     }
-
+  
     setInput(updatedInput);
     setTextClass(isCorrect ? 'correct' : 'incorrect');
 
@@ -80,8 +80,11 @@ function App() {
     
 
     const elapsedTime = (40 - timer) / 60;
-    const cpm = textLength / elapsedTime;
-    const wpm = cpm / 5;
+    const cpm = elapsedTime > 0 ? textLength / elapsedTime : 0;
+    let wpm = 0;
+    if (sessionCount > 0 && textLength > 0) {
+      wpm = cpm / (textLength / sessionCount);
+    }
     setTypingSpeed(wpm.toFixed(0));
   };
 
@@ -116,8 +119,10 @@ function App() {
     setTimer(40);
     handleLanguageClick(selectedLanguage);
     setTypingSpeed(0);
+    setTotalTypingSpeed(0); // 초기화 추가
+    setSessionCount(0); // 초기화 추가
   };
-
+  
   return (
     <div className="App">
       <h1>Typing Practice</h1>
