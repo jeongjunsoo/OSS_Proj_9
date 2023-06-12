@@ -4,7 +4,7 @@ import AutosizeTextarea from 'react-autosize-textarea';
 import Text from './RandomText';
 
 function App() {
-  const [selectedLanguage, setSelectedLanguage] = useState(''); 
+  const [selectedLanguage, setSelectedLanguage] = useState(false); 
   const [text, setText] = useState(''); 
   const [input, setInput] = useState(''); 
   const [textClass, setTextClass] = useState(''); 
@@ -15,7 +15,7 @@ function App() {
   const [sessionCount, setSessionCount] = useState(0); 
   const [textLength, setTextLength] = useState(0);
   const [previousTexts, setPreviousTexts] = useState([]);
-  const [isTimerExpired, setIsTimerExpired] = useState(false); 
+  const [isTimerExpired, setIsTimerExpired] = useState(true); 
 
   const handleLanguageClick = (language) => {
     setSelectedLanguage(language); 
@@ -24,6 +24,7 @@ function App() {
     setIsTimerRunning(false); 
     setTypingSpeed(0); 
     setIsTimerExpired(false);
+    setTimer(40);
   };
 
   const generateNewText = (language) => {
@@ -109,7 +110,7 @@ function App() {
   const formatTypingSpeed = () => {
     if (sessionCount > 0) {
       const averageSpeed = totalTypingSpeed / sessionCount;
-      const formattedSpeed = averageSpeed.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const formattedSpeed = averageSpeed.toFixed(1).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return formattedSpeed;
     }
     return 0;
@@ -121,6 +122,7 @@ function App() {
     setTypingSpeed(0);
     setTotalTypingSpeed(0); // 초기화 추가
     setSessionCount(0); // 초기화 추가
+    setPreviousTexts([]);
   };
   
   return (
@@ -128,7 +130,7 @@ function App() {
       <h1>Typing Practice</h1>
       <div className="language-buttons">
         {/* 언어 선택 버튼들 */}
-        <button onClick={() => handleLanguageClick('C')}>C</button>
+        <button onClick={() => handleLanguageClick('C')} >C</button>
         <button onClick={() => handleLanguageClick('Java')}>Java</button>
         <button onClick={() => handleLanguageClick('React')}>React</button>
         <button onClick={() => handleLanguageClick('Python')}>Python</button>
@@ -174,13 +176,13 @@ function App() {
               <span>남은 시간: {timer}</span>
             </div>
             <div className="typing-speed">
-              <span>타이핑 속도: {formatTypingSpeed()} WPM</span>
+              <span>타이핑 속도: {formatTypingSpeed() * 5} 타</span>
             </div>
           </div>
         </>
       ) : (
         <div className="completion-message">
-          {`시간이 초과되었습니다. 당신의 최종 타자 속도는 ${formatTypingSpeed()}입니다.`}
+          {`시간이 초과되었습니다. 당신의 최종 타자 속도는 ${formatTypingSpeed() * 5}타 입니다.`}
           <br />
           <button onClick={handleRestartClick}>다시하기</button>
         </div>

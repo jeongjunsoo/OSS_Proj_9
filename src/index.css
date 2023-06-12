@@ -18,24 +18,31 @@ body {
 
 h1 {
   margin-bottom: 20px;
-}
-
-.language-buttons {
-  margin-bottom: 20px;
+  font-size: 28px;
+  color: #333;
 }
 
 .language-buttons button {
   margin-right: 10px;
   padding: 8px 16px;
   font-size: 16px;
+  background-color: #f2f2f2;
+  border: 1px solid gray;
+  border-radius: 4px;
 }
 
+.language-buttons button:hover {
+  background-color: blue;
+  cursor: pointer;
+}
+
+
 .text-container {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .text-to-type {
-  font-size: 24px;
+  font-size: 50px;
   white-space: pre-wrap;
   margin-bottom: 10px;
   padding: 10px;
@@ -43,6 +50,8 @@ h1 {
   background-color: #f2f2f2;
   color: gray;
   display: inline-block;
+  margin-top: 30px;
+  
 }
 
 .text-to-type span.correct {
@@ -74,7 +83,22 @@ h1 {
 }
 
 .typing-speed {
-  margin-top: 20px;
-  font-size: 16px;
+  margin-top: 30px;
+  font-size: 20px;
 }
 
+.timer {
+  margin-top: 30px;
+  font-size: 20px;
+}
+
+.completion-message {
+  margin-top: 30px;
+  font-size: 20px;
+}
+
+.completion-message button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+}
