@@ -16,6 +16,7 @@ function App() {
   const [textLength, setTextLength] = useState(0);
   const [previousTexts, setPreviousTexts] = useState([]);
   const [isTimerExpired, setIsTimerExpired] = useState(true); 
+  const [isFirstTime, setIsFirstTime] = useState(true);
 
   const handleLanguageClick = (language) => {
     setSelectedLanguage(language); 
@@ -25,12 +26,16 @@ function App() {
     setTypingSpeed(0); 
     setIsTimerExpired(false);
     setTimer(40);
+    setTotalTypingSpeed(0);
+    setPreviousTexts([]);
+    setSessionCount(0); 
+    setIsFirstTime(false); 
   };
 
   const generateNewText = (language) => {
     let newText = Text(language); 
 
-    while (previousTexts.includes(newText)) {
+    while (previousTexts.some((prevText) => prevText === newText)) {
       newText = Text(language); 
     }
 
@@ -74,11 +79,12 @@ function App() {
     if (isCorrect && formattedInput === formattedText) {
       generateNewText(selectedLanguage);
       setTotalTypingSpeed(prevTotalSpeed => prevTotalSpeed + parseFloat(typingSpeed));
+      setTextLength(input.length);
       setSessionCount(prevCount => prevCount + 1);
-      setTextLength(prevLength => prevLength + input.length);
       setInput('');
     }
     
+    setTextLength(prevLength => prevLength + input.length);
 
     const elapsedTime = (40 - timer) / 60;
     const cpm = elapsedTime > 0 ? textLength / elapsedTime : 0;
@@ -120,8 +126,8 @@ function App() {
     setTimer(40);
     handleLanguageClick(selectedLanguage);
     setTypingSpeed(0);
-    setTotalTypingSpeed(0); // 초기화 추가
-    setSessionCount(0); // 초기화 추가
+    setTotalTypingSpeed(0); 
+    setSessionCount(0); 
     setPreviousTexts([]);
   };
   
@@ -141,54 +147,60 @@ function App() {
         <button onClick={() => handleLanguageClick('PHP')}>PHP</button>
         <button onClick={() => handleLanguageClick('Ruby')}>Ruby</button>
       </div>
-      {selectedLanguage && !isTimerExpired ? (
-        <>
-          <div className="text-container">
-            <pre className={`text-to-type ${textClass}`}>
-              {text.split('').map((letter, index) => {
-                let className = '';
-                if (input.charAt(index) === letter) {
-                  className = 'correct';
-                } else if (input.charAt(index) !== '') {
-                  className = 'incorrect';
-                }
-                return (
-                  <span key={index} className={className}>
-                    {letter === '\n' ? <br /> : letter}
-                  </span>
-                );
-              })}
-            </pre>
-          </div>
-          <div className="input-container">
-            <AutosizeTextarea
-              rows={10}
-              value={input}
-              onChange={handleChange}
-              onFocus={handleInputFocus}
-              className="typing-space"
-              placeholder={timer > 0 ? '여기에서 타이핑을 시작하세요...' : '타이머 종료'}
-              disabled={timer <= 0}
-            />
-          </div>
-          <div className="info-container">
-            <div className="timer">
-              <span>남은 시간: {timer}</span>
-            </div>
-            <div className="typing-speed">
-              <span>타이핑 속도: {formatTypingSpeed() * 5} 타</span>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="completion-message">
-          {`시간이 초과되었습니다. 당신의 최종 타자 속도는 ${formatTypingSpeed() * 5}타 입니다.`}
-          <br />
-          <button onClick={handleRestartClick}>다시하기</button>
-        </div>
-      )}
+      
+{selectedLanguage && !isTimerExpired ? (
+  <>
+    <div className="text-container">
+      <pre className={`text-to-type ${textClass}`}>
+        {text.split('').map((letter, index) => {
+          let className = '';
+          if (input.charAt(index) === letter) {
+            className = 'correct';
+          } else if (input.charAt(index) !== '') {
+            className = 'incorrect';
+          }
+          return (
+            <span key={index} className={className}>
+              {letter === '\n' ? <br /> : letter}
+            </span>
+          );
+        })}
+      </pre>
     </div>
-  );
-}
-
+    <div className="input-container">
+      <AutosizeTextarea
+        rows={10}
+        value={input}
+        onChange={handleChange}
+        onFocus={handleInputFocus}
+        className="typing-space"
+        placeholder={timer > 0 ? '여기에서 타이핑을 시작하세요...' : '타이머 종료'}
+        disabled={timer <= 0}
+      />
+    </div>
+    <div className="info-container">
+      <div className='now-language'> 
+        <span> 현재 연습중인 언어 : {selectedLanguage} </span>
+      </div>
+      <div className="timer">
+        <span>남은 시간: {timer}</span>
+      </div>
+      <div className="typing-speed">
+        <span>타이핑 속도: {formatTypingSpeed() * 5} 타</span>
+      </div>
+    </div>
+  </>
+) : (
+  <div>
+    {isFirstTime ? null : (
+      <div className="completion-message">
+        {`시간이 초과되었습니다. 당신의 최종 타자 속도는 ${formatTypingSpeed() * 5}타 입니다.`}
+        <br />
+        <button onClick={handleRestartClick}>다시하기</button>
+      </div>
+    )}
+  </div>
+)}
+</div>
+  )};
 export default App;
